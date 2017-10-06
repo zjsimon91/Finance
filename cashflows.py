@@ -39,6 +39,29 @@ def growthAnnuity(p,r,g,n):
     perp = growthPerpetuity(p,r,g)
     return perp * (1-((1+g)/(1+r))**n)
 
+
+#Fixed income
+def calcYTM(flows,pv,beg=-1,end=100):
+    r = 0
+    pv_flows = pv - sum([flows[i]/(1+r)**(i+1) for i in range(len(flows))])
+    while abs(pv_flows) > .01:
+        if pv_flows < 0:
+            newr = (r+end)/2.0
+            beg = r
+            r = newr
+        else:
+            newr = (r+beg)/2.0
+            end = r
+            r = newr
+
+        pv_flows = pv - sum([flows[i]/(1+r)**(i+1) for i in range(len(flows))])
+
+    return r
+
+def bondValue(flows,rates):
+    pv_flows =  sum([flows[i]/(1+rates[i])**(i+1) for i in range(len(flows))])
+    return pv_flows
+
 if __name__ == "__main__":
     machine = 600.0
     dep_annual = machine/3
