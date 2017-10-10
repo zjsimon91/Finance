@@ -62,19 +62,15 @@ def bondValue(flows,rates):
     pv_flows =  sum([flows[i]/(1+rates[i])**(i+1) for i in range(len(flows))])
     return pv_flows
 
+def calculateSpot(Value,flows,rates):
+    rate_at = rates.index(None)
+    flowValue = sum([flows[i]/(1+rates[i])**(i+1) for i in range(len(flows)) if i != rate_at] )
+    pvMissing = Value - flowValue
+    return (flows[rate_at]/pvMissing)**(1.0/(rate_at+1)) -1
+
+
 if __name__ == "__main__":
-    machine = 600.0
-    dep_annual = machine/3
-    rev = 400.0
-    cost = 100.0
-
-    tax = .3
-    r = .1
-
-    p = (rev-cost)*(1-tax) + (dep_annual)*tax
-    npv = annuity(p,r,3)-600
-    print npv,p
-
+    pass
 
 
 
