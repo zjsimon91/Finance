@@ -1,3 +1,33 @@
+import operator
+
+class RandomVar():
+    def __init__(self, exp, stddev):
+        self.exp = exp
+        self.stddev = stddev
+
+    def combine(self, var, a, b, corr):
+        exp = self.exp * a + var.exp * b
+        stddev = ((a ** 2 * self.stddev ** 2) + (b ** 2 * var.stddev ** 2) + (
+        2 * a * b * self.stddev * var.stddev * corr)) ** .5
+        return RandomVar(exp, stddev)
+
+    def __str__(self):
+        return str((self.exp, self.stddev))
+
+    def to_dict(self):
+        return {"exp":self.exp,"stddev":self.stddev}
+
+
+def capM(ra,rf,rm):
+    """
+    :param ra: return of asset
+    :param rf: risk free rate
+    :param rm: return of market
+    :return: Beta
+    """
+    b = (ra-rf)/(rm-rf)
+    return b
+
 def perpetuity(p,r):
     """
         :param p: payment
@@ -41,7 +71,7 @@ def growthAnnuity(p,r,g,n):
 
 
 #Fixed income
-def calcYTM(flows,pv,beg=-1,end=100):
+def calcYTM(flows,pv,beg=-.999999,end=100):
     r = 0
     pv_flows = pv - sum([flows[i]/(1+r)**(i+1) for i in range(len(flows))])
     while abs(pv_flows) > .01:
@@ -68,10 +98,18 @@ def calculateSpot(Value,flows,rates):
     pvMissing = Value - flowValue
     return (flows[rate_at]/pvMissing)**(1.0/(rate_at+1)) -1
 
+def findOption(upper,lower):
+    lt = map(lambda x: -x * upper[1]/lower[1],lower)
+    ut = map(operator.add, upper, lt)
+    a = ut[2]/ut[0]
+    b = (lower[2] - lower[0]*a)/lower[1]
+    return a,b
+
 
 if __name__ == "__main__":
     pass
-
-
+    a,b = findOption([150,1.1,50],[100,1.1,0])
+    lu = a*120 + b
+    print lu
 
 
